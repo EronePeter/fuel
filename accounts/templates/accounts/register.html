@@ -1,0 +1,31 @@
+{% extends 'app/base.html' %}
+{% block title %}Registration{% endblock title %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="w3-container">
+        <div class="row">
+            <div class="col-sm-2 col-md-3 col-xl-4"></div>
+            <div class="col-sm-8 col-md-6 col-xl-4">
+                <div>
+                    <div class="mb-4">
+                        <h4 class="text-center font-weight-bold w3-cursive">User Account Creation Form</h4>
+                    </div>
+
+                    <div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div>
+                                {{ form|crispy }}
+                            </div>
+                            <div class="mt-4 text-center">
+                                <button type="submit" class="btn w3-pink w3-round-xlarge">Submit To Create User Account</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2 col-md-3 col-xl-4"></div>
+        </div>
+    </div>
+{% endblock content %}

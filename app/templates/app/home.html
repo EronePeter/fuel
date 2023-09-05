@@ -1,0 +1,247 @@
+{% extends 'app/base.html' %}
+{% block title %}Home{% endblock title %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+<div class="mt-3">
+    <div class="">
+        
+        <div class="w3-sidebar w3-bar-block w3-light-gray" style="display: none" id="side-bar">
+            <button class="w3-bar-item w3-large w3-hover-white w3-white" onclick="w3_close()">Close <span class="w3-display-topright">&times;</span></button>
+
+            <!-- An inner side bar -->
+            <div class="w3-sidebar w3-collapse w3-card w3-bar-block w3-animate-left" style="width: 200px" id="inline-side-bar">
+                <button class="w3-bar-item w3-button w3-hide-large w3-large" onclick="w3_close_inner()">Click to hide</button>
+                <div class="w3-container w3-dark-gray">
+                    <h3>Content</h3>
+                </div>
+                <a class="text-decoration-none w3-bar-item w3-button w3-white w3-hover-white w3-text-pink w3-hover-text-pink" href="{% url 'home' %}">Home</a>
+
+                {% if perms.users.add_user %}
+                    <a class="text-decoration-none w3-bar-item w3-button" href="{% url 'register' %}">Register</a>
+                {% endif %}
+                
+                <a class="text-decoration-none w3-bar-item w3-button w3-light-gray w3-hover-light-gray" href="{% url 'logout' %}">Log Out</a>
+            </div>
+
+            <div class="w3-main" style="margin-left: 200px">
+                <div>
+                    <button class="w3-button w3-hide-large w3-xlarge w3-white w3-hover-white" onclick="w3_open_inner()">&#9776;</button>
+                    <div class="w3-container">
+                        <h3 class="text-center font-weight-bold w3-monospace">Petrol Fuel Data</h3>
+                    </div>
+                </div>
+                <div class="w3-container mt-5">
+                    <div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% if user.is_staff %}
+                                    <div>
+                                        <div class="mb-5">
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <div>
+                                                    {{ formm|crispy }}
+                                                </div>
+                                                <div class="mt-3">
+                                                    <button type="submit" class="btn w3-pink w3-round-xlarge">Post</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="mb-5">
+                                            <p class="w3-monospace">
+                                                After top up,
+                                                <span class="w3-large w3-text-pink">{{ initial_litres_object.fuel_litres|intcomma }}</span>
+                                                litres of fuel are in the tank.
+                                            </p>
+                                        </div>
+                                        <div class="mb-5">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="w3-cursive">Initial ltrs</th>
+                                                            <th class="w3-cursive">consumed/sold ltrs</th>
+                                                            <th class="w3-cursive">remaining ltrs</th>
+                                                            <th class="w3-cursive">S-ltrs amt</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <span class="font-weight-bold w3-text-indigo">{{ initial_litres_object.fuel_litres|intcomma }}</span>
+                                                            </td>
+                                                            <td class="w3-monospace">{{ fuel_sold_litres|intcomma }}</td>
+                                                            <td class="w3-monospace">{{ remainder }}</td>
+                                                            <td class="w3-monospace w3-text-pink font-weight-bold">{{ total|intcomma }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>   
+                                {% else %}
+                                    <div>
+                                        <p class="w3-monospace">
+                                            After top up,
+                                            <span class="w3-large w3-text-pink">{{ initial_litres_object.fuel_litres|intcomma }}</span>
+                                            litres of fuel are in the tank.
+                                        </p>
+                                    </div>
+                                {% endif %} 
+                            </div>
+        
+                            <div class="col-md-6">
+                                {% if daily_page_obj %}
+                                    <div class="table-responsive"> 
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                    <th>S/no</th>
+                                                    <th>Litres in the tank</th>
+                                                    <th>Natural-day/date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for daily in daily_page_obj %}
+                                                    <tr>
+                                                        <th>{{ forloop.counter }}</th>
+                                                        <td class="w3-monospace">{{ daily.litres }}</td>
+                                                        <td class="w3-monospace">{{ daily.date|naturalday }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+        
+                                    <!-- Page pagination section -->
+        
+                                {% else %}
+                                    <div>
+                                        <p>No updates on daily fuel litres left in the fuel tank</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+            </div>
+
+            <!-- script element -->
+
+            <script>
+                function w3_open_inner() {
+                    document.getElementById('inline-side-bar').style.display = "block";
+                }
+
+                function w3_close_inner() {
+                    document.getElementById('inline-side-bar').style.display = "none";
+                }
+            </script>
+        
+        </div>
+
+        <div class="">
+            <div class="mb-3">
+                <button class="w3-button w3-xlarge w3-white w3-hover-white" onclick="w3_open()">&#9776;</button>
+            </div>
+
+            <div class="w3-container">
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4">
+                        <div class="mb-4">
+                            <div class="mb-5">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div>
+                                        {{ form|crispy }}
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="btn w3-pink w3-round-xlarge">Post</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>
+                            {% if sales_page_obj %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr class="w3-cursive">
+                                                <th>S/no</th>
+                                                <th>Date</th>
+                                                <th>Litres sold per day</th>
+                                                <th>Price per litre</th>
+                                                <th>Total Amt</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in sales_page_obj %}
+                                                <tr>
+                                                    <th>{{ forloop.counter }}</th>
+                                                    {% for sum, instance in item.items %}
+                                                        <td class="w3-monospace">{{ instance.date|date:"F, d Y" }}</td>
+                                                        <td class="w3-monospace">{{ instance.litres_per_day }}</td>
+                                                        <td class="w3-monospace">{{ instance.price_per_litre }}</td>
+                                                        <th>
+                                                            <span class="w3-cursive">{{ sum|intcomma }}</span>
+                                                        </th>
+                                                
+                                                    {% endfor %}
+                                                </tr>
+                                                 
+                                            {% endfor %}
+                                        
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Page pagination section -->
+
+                                <div class="text-center">
+                                    {% if sales_page_obj.has_next %}
+                                        <a href="?pg={{ sales_page_obj.next_page_number }}" class="btn btn-outline-info btn-sm">Previous</a>
+                                    {% endif %}
+                                    {% for num in sales_page_obj.paginator.page_range %}
+                                        {% if num == sales_page_obj.number %}
+                                            <a href="?pg={{ num }}" class="btn w3-indigo btn-sm">{{ num }}</a>
+                                        {% elif num > sales_page_obj.number|add:"-2" and num < sales_page_obj.number|add:"2" %}
+                                            <a href="?pg={{ num }}" class="btn btn-outline-info btn-sm">{{ num }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if sales_page_obj.has_previous %}
+                                        <a href="?pg={{ sales_page_obj.previous_page_number }}" class="btn btn-outline-info btn-sm">Next</a>
+                                    {% endif %}
+                                </div>
+                            
+                            {% else %}
+                                <div>
+                                    <p class="w3-cursive">No information captured yet.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function w3_open() {
+                document.getElementById('side-bar').style.width = "100%";
+                document.getElementById('side-bar').style.display = "block";
+            }
+
+            function w3_close() {
+                document.getElementById('side-bar').style.display = "none";
+            }
+        </script>
+        
+    </div>    
+</div>
+{% endblock content %}
