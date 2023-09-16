@@ -72,3 +72,12 @@ class FuelLitre(DateAbstract):
         # LitresBeforeNextTopUp.objects.create(litres=self.fuel_litres)
         # super().save(*args, **kwargs)
 
+class Expense(models.Model):
+    expense_name = models.CharField(max_length=100)
+    expense_amount = models.PositiveSmallIntegerField(verbose_name="Amount")
+    date = models.DateField(default=date.today)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.expense_name} {self.expense_amount}, {self.date}"
+
