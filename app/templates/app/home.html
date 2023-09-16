@@ -61,10 +61,10 @@
                                                 <table class="table table-bordered">
                                                     <thead>
                                                         <tr>
-                                                            <th class="w3-cursive">Initial ltrs</th>
-                                                            <th class="w3-cursive">consumed/sold ltrs</th>
-                                                            <th class="w3-cursive">remaining ltrs</th>
-                                                            <th class="w3-cursive">S-ltrs amt</th>
+                                                            <th class="w3-monospace">Initial ltrs</th>
+                                                            <th class="w3-monospace">consumed/sold ltrs</th>
+                                                            <th class="w3-monospace">remaining ltrs</th>
+                                                            <th class="w3-monospace">S-ltrs amt</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -172,7 +172,7 @@
                                 <div class="table-responsive">
                                     <table class="table table-bordered">
                                         <thead>
-                                            <tr class="w3-cursive">
+                                            <tr class="w3-serif">
                                                 <th>S/no</th>
                                                 <th>Date</th>
                                                 <th>Litres sold per day</th>
@@ -189,7 +189,7 @@
                                                         <td class="w3-monospace">{{ instance.litres_per_day }}</td>
                                                         <td class="w3-monospace">{{ instance.price_per_litre }}</td>
                                                         <th>
-                                                            <span class="w3-cursive">{{ sum|intcomma }}</span>
+                                                            <span class="w3-sans-serif">{{ sum|intcomma }}</span>
                                                         </th>
                                                 
                                                     {% endfor %}
@@ -221,7 +221,7 @@
                             
                             {% else %}
                                 <div>
-                                    <p class="w3-cursive">No information captured yet.</p>
+                                    <p class="w3-monospace">No information captured yet.</p>
                                 </div>
                             {% endif %}
                         </div>
