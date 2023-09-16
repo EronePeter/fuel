@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import FuelLitre, LitresBeforeNextTopUp, Sale, Price
+from .models import FuelLitre, LitresBeforeNextTopUp, Sale, Price, Expense
 
 from django.db.models import Q, Sum
 
@@ -10,6 +10,8 @@ from django.core.paginator import Paginator
 from .forms import SaleForm, FuelLitreForm
 
 from django.contrib import messages
+
+from django.forms import modelformset_factory
 
 
 @login_required
@@ -204,6 +206,73 @@ def home(request):
 
     context = {'form': form, 'formm': form_one}
     return render(request, "app/home.html", context)
+
+
+# View to add expenses of the day
+@login_required 
+def expenses(request):
+    ExpenseForm = modelformset_factory(Expense, fields=['expense_name', 'expense_amount'], can_delete=True, extra=2)
+    if request.method == "POST":
+        
+        formset = ExpenseForm(request.POST)
+
+        if formset.is_valid():
+                
+            form_objects = formset.save(commit=False)
+
+            for form_object in form_objects:
+                form_object.user = request.user
+                form_object.save()
+
+            for obj in formset.deleted_objects:
+                obj.delete()
+
+            messages.success(request, "Data captured successfully")
+            return redirect('expenses')
+
+    
+    # Queryset for none return objects
+    queryset = Expense.objects.none()
+    
+    # Instatiating the formset class
+    formset = ExpenseForm(queryset=queryset)
+
+    # FuelLitre model class latest instance
+    initial_ltrs = FuelLitre.objects.all().order_by('-date')
+
+
+    if initial_ltrs:
+        initial_ltr = initial_ltrs.first()
+        
+        # Expenses base on a particular latest instance of "FuelLitre" model class
+        expenses_incurred = Expense.objects.filter(Q(date__gte=initial_ltr.date)).order_by('-date')
+
+        # An empty set to hold unique dates for expenses got incurred
+        unique_date = set()
+        
+        # Looping over the expenses objects, filtering the value of the date attribute
+        for expense in expenses_incurred:
+            unique_date.add(expense.date)
+        
+        # Dictionary object to capture date as a key and expenses incurred on that particular date as a value to the key
+        expenses_dict = {}
+
+        # Looping over the set object "unique_date"
+        for u_date in unique_date:
+            date_expenses = Expense.objects.filter(Q(date=u_date))
+
+            expenses_dict[u_date] = date_expenses
+
+        
+        # Total expenses as from a specified date
+        expenses_amt = Expense.objects.filter(Q(date__gte=initial_ltr.date)).aggregate(t_expense=Sum('expense_amount'))
+
+        
+        context = {'expenses': expenses_dict, 'total': expenses_amt, 'formset': formset}
+        return render(request, "app/expenses.html", context)
+        
+    context = {'formset': formset}
+    return render(request, "app/expenses.html", context)
 
 
 
