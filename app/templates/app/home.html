@@ -17,7 +17,7 @@
                     <h3>Content</h3>
                 </div>
                 <a class="text-decoration-none w3-bar-item w3-button w3-white w3-hover-white w3-text-pink w3-hover-text-pink" href="{% url 'home' %}">Home</a>
-
+                <a class="text-decoration-none w3-bar-item w3-button" href="{% url 'expenses' %}">Expenses</a>
                 {% if perms.users.add_user %}
                     <a class="text-decoration-none w3-bar-item w3-button" href="{% url 'register' %}">Register</a>
                 {% endif %}
