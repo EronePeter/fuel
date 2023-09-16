@@ -1,0 +1,121 @@
+{% extends "app/base.html" %}
+{% block title %}Expenses{% endblock title %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+<div class="w3-sidebar w3-card w3-collapse w3-animate-left w3-bar-block" style="width: 200px" id="s_bar">
+    <button class="w3-bar-item w3-button w3-hide-large w3-large" onclick="w3_close()">Close <span class="w3-display-topright">&times;</span></button>
+    <div class="w3-container w3-dark-gray">
+        <h3>Content</h3>
+    </div>
+    <a class="w3-bar-item w3-button text-decoration-none w3-white w3-hover-white w3-text-pink w3-hover-text-pink font-weight-bold" href="{% url 'home' %}">
+        Home
+    </a>
+</div>
+<div class="w3-main" style="margin-left:200px">
+    <div class="w3-light-gray">
+        <button class="w3-button w3-hide-large w3-xlarge w3-white w3-hover-white" onclick="w3_open()">&#9776;</button>
+        <div class="w3-container">
+            <h3 class="text-center font-weight-bold w3-xlarge">Expenses</h3>
+        </div>
+    </div>
+    <div class="w3-container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-5">
+                    <div class="mb-5">
+                        <h4 class="font-weight-bold w3-xlarge">Add Expense(s) Form</h4>
+                    </div>
+                    <div>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ formset.management_form }}
+                            {% for form in formset %}
+                                <div class="row">
+                                    <div class="form-group col-sm-5 mb-0">
+                                        {{ form.expense_name|as_crispy_field }}
+                                    </div>
+                                    <div class="form-group col-sm-5 mb-0">
+                                        {{ form.expense_amount|as_crispy_field }}
+                                    </div>
+                                    {% if formset.can_delete %}
+                                        <div class="form-group col-sm-2 mb-0">
+                                            {{ form.DELETE|as_crispy_field }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+
+                            <div class="mt-3">
+                                <button type="submit" class="btn w3-pink w3-round-large">Submit Expenses</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-5">
+                    <div class="mb-5">
+                        <h4 class="font-weight-bold w3-xlarge">Expenses Incurred</h4>
+                    </div>
+                    <div>
+                        {% if expenses %}
+                            {% for key, values in expenses.items %} 
+                                <div>
+                                    <div>
+                                        <ul>
+                                            <li class="w3-text-teal font-weight-bold">{{ key|date:"F, d Y" }}</li>
+                                            <div class="mt-3">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-sm">
+                                                        <thead class="w3-light-gray">
+                                                            <tr>
+                                                                <th>No.</th>
+                                                                <th>Expense</th>
+                                                                <th>Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for expense in values %}
+                                                                <tr>
+                                                                    <th>{{ forloop.counter }}</th>
+                                                                    <th>{{ expense.expense_name }}</th>
+                                                                    <td>{{ expense.expense_amount|intcomma }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </ol>
+                                    </div>    
+                                    
+                                </div>
+                            {% endfor %}
+
+                            <div class="mt-4">
+                                <p class="text-center">Total expense so far is <span class="font-weight-bold">{{ total.t_expense|intcomma }}</span></p>
+                            </div>
+                        {% else %}
+                            <div>
+                                <p>No records yet for the expenses</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>    
+
+<script>
+    function w3_open() {
+        document.getElementById('s_bar').style.display = "block";
+    }
+
+    function w3_close() {
+        document.getElementById('s_bar').style.display = "none";
+    }
+</script>
+{% endblock content %}
