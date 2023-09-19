@@ -47,58 +47,64 @@ def home(request):
             fuel_litre_price = Price.objects.all().order_by('-date')
 
             # Fuel litres in the tank before today's sold fuel litres
-            previous_reading = LitresBeforeNextTopUp.objects.all().order_by('-date').first()
+            previous_readings = LitresBeforeNextTopUp.objects.all().order_by('-date')
 
-            if fuel_litre_price:
-                # Current price per fuel litre
-                price = fuel_litre_price.first()
+            if previous_readings:
+                previous_reading = previous_readings.first()
 
-                if not total_litres:
-                    form_data.litres_per_day = current_fuel_reading
-                    form_data.price_per_litre = price.price_per_litre
-                    form_data.person = request.user
+                if fuel_litre_price:
+                    # Current price per fuel litre
+                    price = fuel_litre_price.first()
 
-                    # Current fuel litres in the tank
-                    current_litres = previous_reading.litres - current_fuel_reading
+                    if not total_litres:
+                        form_data.litres_per_day = current_fuel_reading
+                        form_data.price_per_litre = price.price_per_litre
+                        form_data.person = request.user
 
-                    # Creating and saving an object of the current fuel reading 
-                    LitresBeforeNextTopUp.objects.create(litres=current_litres)
+                        # Current fuel litres in the tank
+                        current_litres = previous_reading.litres - current_fuel_reading
 
-                    # Saving the object to the database
-                    form_data.save()
+                        # Creating and saving an object of the current fuel reading 
+                        LitresBeforeNextTopUp.objects.create(litres=current_litres)
 
-                    return redirect('home')
+                        # Saving the object to the database
+                        form_data.save()
+
+                        return redirect('home')
 
                 
 
-                latest_fuel_reading_object = total_litres.first()
+                    latest_fuel_reading_object = total_litres.first()
 
-                latest_fuel_reading = latest_fuel_reading_object.total_sold_litres
+                    latest_fuel_reading = latest_fuel_reading_object.total_sold_litres
 
-                # Finding litres per day by subtracting the previous day reading from the current day reading
+                    # Finding litres per day by subtracting the previous day reading from the current day reading
 
-                litres_per_day = current_fuel_reading - latest_fuel_reading
+                    litres_per_day = current_fuel_reading - latest_fuel_reading
 
-                form_data.litres_per_day = litres_per_day
+                    form_data.litres_per_day = litres_per_day
 
-                form_data.price_per_litre = price.price_per_litre
+                    form_data.price_per_litre = price.price_per_litre
 
-                form_data.person = request.user
+                    form_data.person = request.user
 
 
-                # Current fuel litres in the tank
-                current_litres = previous_reading.litres - litres_per_day
+                    # Current fuel litres in the tank
+                    current_litres = previous_reading.litres - litres_per_day
 
-                # Creating and saving an object of the current fuel reading in the tank
-                LitresBeforeNextTopUp.objects.create(litres=current_litres)
+                    # Creating and saving an object of the current fuel reading in the tank
+                    LitresBeforeNextTopUp.objects.create(litres=current_litres)
 
-                # Saving the form
-                form_data.save()
+                    # Saving the form
+                    form_data.save()
 
-                return redirect('home')
+                    return redirect('home')
             
 
-            messages.error(request, "Price per litre not set.")
+                messages.error(request, "Price per litre not set.")
+                return redirect('home')
+                
+            messages.error(request, "Initial fuel litres in the tank haven't been set.")
             return redirect('home')
 
 
