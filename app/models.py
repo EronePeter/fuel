@@ -18,21 +18,21 @@ class Sale(Common):
     person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
-    def save(self, *args, **kwargs):
-        sales = Sale.objects.all().order_by('-date')
+    # def save(self, *args, **kwargs):
+        # sales = Sale.objects.all().order_by('-date')
 
-        if not sales:
-            self.litres_per_day = self.total_sold_litres
-            super().save(*args, **kwargs)
+        # if not sales:
+            # self.litres_per_day = self.total_sold_litres
+            # super().save(*args, **kwargs)
         
-        else:
-            sale = sales.first()
+        # else:
+            # sale = sales.first()
 
-            day_sales = self.total_sold_litres - sale.total_sold_litres
+            # day_sales = self.total_sold_litres - sale.total_sold_litres
 
-            self.litres_per_day = day_sales
+            # self.litres_per_day = day_sales
 
-            super().save(*args, **kwargs)
+            # super().save(*args, **kwargs)
 
 
 class DateAbstract(models.Model):
